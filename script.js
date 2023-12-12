@@ -48,6 +48,7 @@ Let's pretend the game is only in our imagination, like we are Komugi
 
   when game on we can play round
   when game off we can start the game
+
 */
 
 // factory functions
@@ -103,6 +104,7 @@ function GameController() {
   let playerX = Player('Player X', 'x');
   let playerO = Player('Player O', 'o');
   let activePlayer;
+  let winner;
 
   function printBoard(board) {
     for (let i = 0; i < 3; i++) {
@@ -237,15 +239,79 @@ function GameController() {
     return false;
   }
 
-  function finishTheGame(winner) {
+  function finishTheGame(newWinner) {
+    winner = newWinner;
+
     // announce the winner
     console.log(`The winner is ${winner.name}.`);
 
     gameIsOn = false;
   }
 
-  return { startGame, playRound };
+  return { startGame, playRound, gameboard, playerX, playerO, activePlayer, winner, gameIsOn };
 }
 
-const gc = GameController();
-gc.startGame();
+/*
+  GUI
+  DisplayController
+*/
+
+function DisplayController() {
+  const gc = GameController();
+
+  const gameboardDiv = document.getElementById('gameboard');
+  const gameInfoDiv = document.querySelector('.announcements.game');
+  const roundInfoDiv = document.querySelector('.announcements.round');
+
+  let cellDivs;
+  let gameInfoText;
+  let roundInfoText;
+
+  // create board
+  function updateCellDivs(board) {
+    cellDivs = [];
+    for (let i = 0; i < 3; i++) {
+      for (let j = 0; j < 3; j++) {
+        const cellDiv = document.createElement('div');
+        cellDiv.classList.add('cell');
+        cellDiv.dataset.row = i;
+        cellDiv.dataset.column = j;
+        cellDiv.textContent = board[i][j].getValue();
+        // cellDiv.dataset.value = board[i][j].getValue();
+
+        cellDivs.push(cellDiv);
+      }
+    }
+  }
+
+  // update display
+  function updateDisplay() {
+    // announcementDiv.textContent = announcementText;
+    gameInfoDiv.textContent = gameInfoText;
+    roundInfoDiv.textContent = roundInfoText;
+
+    for (const cellDiv of cellDivs) {
+      gameboardDiv.appendChild(cellDiv);
+    }
+  }
+
+  // bind events
+
+  // cell click event handler
+  function cellClickEventHandler(e) {
+    const cellDiv = e.target;
+    gc.playRound(cellDiv.dataset.row, cellDiv.dataset.column);
+    updateCellDivs(gc.gameboard.board);
+    if (!gc.gameIsOn) {
+      gameInfoText = `The winner is ${gc.winner.name}.`;
+      roundInfoText = '';
+    }
+    else {
+      roundInfoText = `${gc.activePlayer.name}\'s turn.`;
+    }
+    updateDisplay();
+  }
+}
+
+// const gc = GameController();
+// gc.startGame();

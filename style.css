@@ -1,0 +1,29 @@
+:root {
+  box-sizing: border-box;
+}
+
+*, ::after, ::before {
+  box-sizing: inherit;
+}
+
+body {
+  margin: 0;
+  padding: 60px;
+}
+
+.announcements > * {
+  margin: 0 0 30px 0;
+  font-size: 40px;
+  font-weight: bold;
+}
+
+.gameboard {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  width: 40vw;
+  aspect-ratio: 1;
+}
+
+.cell {
+  border: 1px solid;
+}
