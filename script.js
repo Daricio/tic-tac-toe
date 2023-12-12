@@ -78,7 +78,11 @@ function Gameboard() {
     // return (selectedCell.getValue() === 'n') ? false : selectedCell.addToken(player.token) | true;
   }
 
-  return { placeToken, board };
+  function getBoard() {
+    return board;
+  }
+
+  return { placeToken, getBoard };
 }
 
 function Cell() {
@@ -97,6 +101,8 @@ function Player(name, token) {
   return { name, token };
 }
 
+
+// TODO: add tie
 function GameController() {
   let gameIsOn = false;
 
@@ -136,7 +142,7 @@ function GameController() {
     console.log(`Player O: ${playerOName}`);
 
     // print the board
-    printBoard(gameboard.board);
+    printBoard(gameboard.getBoard());
 
     // announce active player
     announceActivePlayer();
@@ -153,14 +159,14 @@ function GameController() {
     }
 
     if (gameboard.placeToken(row, column, activePlayer)) {
-      if (checkGameOver(gameboard.board)) {
+      if (checkGameOver(gameboard.getBoard())) {
         finishTheGame(activePlayer);
       }
       else {
         switchActivePlayer();
 
         // print the board
-        printBoard(gameboard.board);
+        printBoard(gameboard.getBoard());
 
         // announce active player
         announceActivePlayer();
@@ -248,7 +254,31 @@ function GameController() {
     gameIsOn = false;
   }
 
-  return { startGame, playRound, gameboard, playerX, playerO, activePlayer, winner, gameIsOn };
+  function getGameboard() {
+    return gameboard;
+  }
+
+  function getPlayerX() {
+    return playerX;
+  }
+
+  function getPlayerO() {
+    return playerO;
+  }
+
+  function getActivePlayer() {
+    return activePlayer;
+  }
+
+  function getWinner() {
+    return winner;
+  }
+
+  function getGameIsOn() {
+    return gameIsOn;
+  }
+
+  return { startGame, playRound, getGameboard, getPlayerX, getPlayerO, getActivePlayer, getWinner, getGameIsOn };
 }
 
 /*
@@ -260,12 +290,23 @@ function DisplayController() {
   const gc = GameController();
 
   const gameboardDiv = document.getElementById('gameboard');
-  const gameInfoDiv = document.querySelector('.announcements.game');
-  const roundInfoDiv = document.querySelector('.announcements.round');
+  const gameInfoDiv = document.querySelector('.announcements .game');
+  const roundInfoDiv = document.querySelector('.announcements .round');
 
   let cellDivs;
   let gameInfoText;
   let roundInfoText;
+
+  function start() {
+    console.log(gc.getGameboard());
+    gc.startGame();
+    console.log(gc.getGameboard());
+    updateCellDivs(gc.getGameboard().getBoard());
+    bindEvents();
+    gameInfoText = `${gc.getPlayerX().name}(X) VS ${gc.getPlayerO().name}(O)`;
+    roundInfoText = `${gc.getActivePlayer().name}\'s turn.`;
+    updateDisplay();
+  }
 
   // create board
   function updateCellDivs(board) {
@@ -276,7 +317,12 @@ function DisplayController() {
         cellDiv.classList.add('cell');
         cellDiv.dataset.row = i;
         cellDiv.dataset.column = j;
-        cellDiv.textContent = board[i][j].getValue();
+
+        const cellValue = board[i][j].getValue();
+        if (cellValue !== 'n') {
+          cellDiv.textContent = board[i][j].getValue();
+        }
+        // cellDiv.textContent = board[i][j].getValue();
         // cellDiv.dataset.value = board[i][j].getValue();
 
         cellDivs.push(cellDiv);
@@ -290,28 +336,38 @@ function DisplayController() {
     gameInfoDiv.textContent = gameInfoText;
     roundInfoDiv.textContent = roundInfoText;
 
+    gameboardDiv.textContent = "";
+
     for (const cellDiv of cellDivs) {
       gameboardDiv.appendChild(cellDiv);
     }
   }
 
   // bind events
+  function bindEvents() {
+    for (const cellDiv of cellDivs) {
+      cellDiv.addEventListener('click', cellClickEventHandler);
+    }
+  }
 
   // cell click event handler
   function cellClickEventHandler(e) {
     const cellDiv = e.target;
     gc.playRound(cellDiv.dataset.row, cellDiv.dataset.column);
-    updateCellDivs(gc.gameboard.board);
-    if (!gc.gameIsOn) {
-      gameInfoText = `The winner is ${gc.winner.name}.`;
+    updateCellDivs(gc.getGameboard().getBoard());
+    if (!gc.getGameIsOn()) {
+      gameInfoText = `The winner is ${gc.getWinner().name}.`;
       roundInfoText = '';
     }
     else {
-      roundInfoText = `${gc.activePlayer.name}\'s turn.`;
+      roundInfoText = `${gc.getActivePlayer().name}\'s turn.`;
+      bindEvents();
     }
     updateDisplay();
   }
+
+  return { start };
 }
 
-// const gc = GameController();
-// gc.startGame();
+const dc = DisplayController();
+dc.start();
