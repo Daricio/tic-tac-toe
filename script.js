@@ -85,6 +85,7 @@ function Gameboard() {
   return { placeToken, getBoard };
 }
 
+
 function Cell() {
   let value = 'n';
 
@@ -96,6 +97,7 @@ function Cell() {
 
   return { getValue, addToken };
 }
+
 
 function Player(name, token) {
   return { name, token };
@@ -160,7 +162,7 @@ function GameController() {
 
     if (gameboard.placeToken(row, column, activePlayer)) {
       if (checkGameOver(gameboard.getBoard())) {
-        finishTheGame(activePlayer);
+        finishGame(activePlayer);
       }
       else {
         switchActivePlayer();
@@ -245,7 +247,7 @@ function GameController() {
     return false;
   }
 
-  function finishTheGame(newWinner) {
+  function finishGame(newWinner) {
     winner = newWinner;
 
     // announce the winner
