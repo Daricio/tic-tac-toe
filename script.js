@@ -104,7 +104,8 @@ function Player(name, token) {
 }
 
 
-// TODO: add tie
+// TODO: - add tie
+// - fix second diagonal
 function GameController() {
   let gameIsOn = false;
 
@@ -215,9 +216,10 @@ function GameController() {
 
     // check diagonals
     // first
+    let diagonalCurrentTokenCount;
     currentToken = board[0][0].getValue();
     if (currentToken !== 'n') {
-      let diagonalCurrentTokenCount = 1;
+      diagonalCurrentTokenCount = 1;
       for (let i = 1; i < 3; i++) {
         if (board[i][i].getValue() === currentToken) {
           diagonalCurrentTokenCount++;
@@ -230,19 +232,38 @@ function GameController() {
     }
 
     // second
-    currentToken = board[2][2].getValue();
+    currentToken = board[0][2].getValue();
     if (currentToken !== 'n') {
       diagonalCurrentTokenCount = 1;
-      for (let i = 1; i >= 0; i--) {
-        if (board[i][i].getValue() === currentToken) {
-          diagonalCurrentTokenCount++;
-        }
+      let i = 1;
+      let j = 1;
+      if (board[i][j].getValue() === currentToken) {
+        diagonalCurrentTokenCount++;
+      }
+      i++;
+      j--;
+      if (board[i][j].getValue() === currentToken) {
+        diagonalCurrentTokenCount++;
       }
 
       if (diagonalCurrentTokenCount === 3) {
         return true;
       }
     }
+
+    // currentToken = board[2][2].getValue();
+    // if (currentToken !== 'n') {
+    //   diagonalCurrentTokenCount = 1;
+    //   for (let i = 1; i >= 0; i--) {
+    //     if (board[i][i].getValue() === currentToken) {
+    //       diagonalCurrentTokenCount++;
+    //     }
+    //   }
+
+    //   if (diagonalCurrentTokenCount === 3) {
+    //     return true;
+    //   }
+    // }
 
     return false;
   }
