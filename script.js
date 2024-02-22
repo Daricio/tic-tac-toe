@@ -104,8 +104,7 @@ function Player(name, token) {
 }
 
 
-// TODO: - add tie
-// - fix second diagonal
+// TODO: - Add start game and restart game actions to GUI
 function GameController() {
   let gameIsOn = false;
 
@@ -114,6 +113,7 @@ function GameController() {
   let playerO = Player('Player O', 'o');
   let activePlayer;
   let winner;
+  let roundsLeft;
 
   function printBoard(board) {
     for (let i = 0; i < 3; i++) {
@@ -136,6 +136,9 @@ function GameController() {
     playerO.name = playerOName;
 
     activePlayer = playerX;
+
+    winner = null;
+    roundsLeft = 9;
 
     gameIsOn = true;
 
@@ -163,9 +166,17 @@ function GameController() {
 
     if (gameboard.placeToken(row, column, activePlayer)) {
       if (checkGameOver(gameboard.getBoard())) {
-        finishGame(activePlayer);
+        winner = activePlayer;
+        finishGame();
+        return;
       }
       else {
+        roundsLeft--;
+        if (roundsLeft === 0) {
+          finishGame();
+          return;
+        }
+
         switchActivePlayer();
 
         // print the board
@@ -268,11 +279,18 @@ function GameController() {
     return false;
   }
 
-  function finishGame(newWinner) {
-    winner = newWinner;
+  function finishGame() {
+    // winner = newWinner;
 
     // announce the winner
-    console.log(`The winner is ${winner.name}.`);
+    let winnerAnnouncement;
+    if (winner !== null) {
+      winnerAnnouncement = `The winner is ${winner.name}.`;
+    }
+    else {
+      winnerAnnouncement = `A tie.`;
+    }
+    console.log(winnerAnnouncement);
 
     gameIsOn = false;
   }
@@ -379,7 +397,14 @@ function DisplayController() {
     gc.playRound(cellDiv.dataset.row, cellDiv.dataset.column);
     updateCellDivs(gc.getGameboard().getBoard());
     if (!gc.getGameIsOn()) {
-      gameInfoText = `The winner is ${gc.getWinner().name}.`;
+      const winner = gc.getWinner();
+      if (winner !== null) {
+        gameInfoText = `The winner is ${gc.getWinner().name}.`;
+      }
+      else {
+        gameInfoText = "A tie."
+      }
+      // gameInfoText = `The winner is ${gc.getWinner().name}.`;
       roundInfoText = '';
     }
     else {
