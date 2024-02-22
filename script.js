@@ -105,7 +105,6 @@ function Player(name, token) {
 
 
 // TODO:
-// - Add styles to everything related to start game action
 function GameController() {
   let gameIsOn = false;
 
