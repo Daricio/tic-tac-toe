@@ -8,9 +8,26 @@
     <script src="./script.js" defer></script>
   </head>
   <body>
+    <button type="button" id="start-game-btn">Start game</button>
+    <dialog id="player-names-dialog">
+      <form>
+        <ul>
+          <li>
+            <label for="playerX-name">Player X name:</label>
+            <input type="text" id="playerX-name" autofocus>
+          </li>
+          <li>
+            <label for="playerO-name">Player O name:</label>
+            <input type="text" id="playerO-name">
+          </li>
+        </ul>
+        <button id="confirm-btn">OK</button>
+        <button id="cancel-btn" formmethod="dialog">Cancel</button>
+      </form>
+    </dialog>
     <div class="announcements" id="announcements">
-      <p class="game">Game information</p>
-      <p class="round">Round information</p>
+      <p class="game"></p>
+      <p class="round"></p>
     </div>
     <div class="gameboard" id="gameboard">
       <div></div>

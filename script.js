@@ -104,7 +104,8 @@ function Player(name, token) {
 }
 
 
-// TODO: - Add start game and restart game actions to GUI
+// TODO: - Put start game logic in a module
+// - Add styles to everything related to start game action
 function GameController() {
   let gameIsOn = false;
 
@@ -338,9 +339,9 @@ function DisplayController() {
   let gameInfoText;
   let roundInfoText;
 
-  function start() {
+  function start(playerXName, playerOName) {
     console.log(gc.getGameboard());
-    gc.startGame();
+    gc.startGame(playerXName, playerOName);
     console.log(gc.getGameboard());
     updateCellDivs(gc.getGameboard().getBoard());
     bindEvents();
@@ -418,4 +419,47 @@ function DisplayController() {
 }
 
 const dc = DisplayController();
-dc.start();
+// dc.start();
+
+
+
+const startGameButton = document.getElementById("start-game-btn");
+const playerNamesDialog = document.getElementById("player-names-dialog");
+const playerXNameInput = document.getElementById("playerX-name");
+const playerONameInput = document.getElementById("playerO-name");
+const confirmButton = document.getElementById("confirm-btn");
+const cancelButton = document.getElementById("cancel-btn");
+
+startGameButton.addEventListener("click", (e) => {
+  playerNamesDialog.showModal();
+});
+
+confirmButton.addEventListener("click", (e) => {
+  // prevent form submit
+  e.preventDefault();
+
+  // start game
+  const playerXName = playerXNameInput.value;
+  const playerOName = playerONameInput.value;
+
+  if (playerXName === "") {
+    if (playerOName === "") {
+      dc.start();
+    }
+    else {
+      dc.start(undefined, playerOName);
+    }
+  }
+  else if (playerOName === "") {
+    dc.start(playerXName, undefined);
+  }
+  else {
+    dc.start(playerXName, playerOName);
+  }
+
+  // replace start button text with "restart"
+  startGameButton.textContent = "Restart game";
+
+  playerNamesDialog.close();
+
+});
